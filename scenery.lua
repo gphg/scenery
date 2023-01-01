@@ -30,7 +30,7 @@ local Scenery = {
 -- Split file into name and extension
 local split = function(inputstr, sep)
     local t = {}
-    for res in string.gmatch(inputstr, "([^"..sep.."]+)") do table.insert(t, res) end
+    for res in string.gmatch(inputstr, "([^" .. sep .. "]+)") do table.insert(t, res) end
     return t[1], t[#t]
 end
 
@@ -112,7 +112,7 @@ function Scenery.init(...)
         error("No default scene supplied", 2)
     elseif type(config[1]) == "table" then
         this.scenes, this.currentscene = manualLoad(config)
-    elseif type(config[1]) =="string" then
+    elseif type(config[1]) == "string" then
         this.scenes = autoLoad(config[2] or "scenes")
         assert(checkScenePresent(config[1], this.scenes), "No scene '" .. config[1] .. "' present")
         this.currentscene = config[1]
@@ -134,48 +134,14 @@ function Scenery.init(...)
     end
 
     -- All the callbacks available in Love 11.4 as described on https://love2d.org/wiki/Category:Callbacks
-    local loveCallbacks = {
-        "directorydropped";
-        "displayrotated";
-        "errhand";
-        "errorhandler";
-        "filedropped";
-        "focus";
-        "gamepadaxis";
-        "gamepadpressed";
-        "gamepadreleased";
-        "joystickadded";
-        "joystickaxis";
-        "joystickhat";
-        "joystickpressed";
-        "joystickreleased";
-        "joystickremoved";
-        "keypressed";
-        "keyreleased";
-        "load";
-        "lowmemory";
-        "mousefocus";
-        "mousemoved";
-        "mousepressed";
-        "mousereleased";
-        "quit";
-        "resize";
-        "run";
-        "textedited";
-        "textinput";
-        "threaderror";
-        "touchmoved";
-        "touchpressed";
-        "touchreleased";
-        "update";
-        "visible";
-        "wheelmoved";
-    }
+    ---@diagnostic disable-next-line: undefined-field
+    local loveCallbacks = love.handlers
 
     -- Loop through the callbacks creating a function with same name on the base class
-    for _, value in ipairs(loveCallbacks) do
+    for value, _ in ipairs(loveCallbacks) do
         this[value] = function(self, ...)
-            assert(type(self.scenes[self.currentscene]) == "table", "Scene '" .. self.currentscene .. "' not a valid scene.")
+            assert(type(self.scenes[self.currentscene]) == "table",
+                "Scene '" .. self.currentscene .. "' not a valid scene.")
 
             -- Check if the function exists on the class
             if self.scenes[self.currentscene][value] then
@@ -184,7 +150,7 @@ function Scenery.init(...)
         end
     end
 
-    this["draw"] = function (self, ...)
+    this["draw"] = function(self, ...)
         assert(type(self.scenes[self.currentscene]) == "table", "Scene '" .. self.currentscene .. "' not a valid scene.")
 
         -- Check if the scene paused
